@@ -5,16 +5,25 @@
  */
 package damic;
 
+import java.net.InetAddress;
+
 /**
  *
  * @author Angel
  */
 public class User {
-    String mName; 
+    String mName = "xx"; 
+    InetAddress mRemoteAddress;
+    public User(){
+
+    }
     public User(String name){
         mName = name;
     }
     public String getName(){
         return mName;
+    }
+    public void setRemoteAddress(InetAddress addr){
+        mRemoteAddress = addr;
     }
 }
