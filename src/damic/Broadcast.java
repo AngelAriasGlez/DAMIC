@@ -13,7 +13,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
-
 /**
  *
  * @author Angel
@@ -21,7 +20,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Broadcast {
     public static int PORT = 4445;
     
-    public static String ANNOUNCE_CMD = "DAMIC ALIVE";
+    public static String CMD_ANNOUNCE = "SACCEPT";
+
     
     ListenThread mLt = new ListenThread();
     AnnounceThread mAt = new AnnounceThread();
@@ -37,13 +37,12 @@ public class Broadcast {
             try {
                 mSocket = new DatagramSocket(PORT);
 
-                byte[] buff = new byte[11];
+                byte[] buff = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(buff, buff.length);
                 while(true){
                         mSocket.receive(packet);
-                        String cmd = new String(packet.getData());
-                        int i = cmd.compareTo(ANNOUNCE_CMD);
-                        if(cmd.equalsIgnoreCase(ANNOUNCE_CMD)){
+                        String cmd = new String(packet.getData(), 0, packet.getLength());
+                        if(cmd.equals(CMD_ANNOUNCE)){
                             User u = new User();
                             u.setRemoteAddress(packet.getAddress());
                             mQueue.add(u);
@@ -72,8 +71,8 @@ public class Broadcast {
             try {
                 mSocket = new DatagramSocket();
 
-                byte[] buff = ANNOUNCE_CMD.getBytes();
-                DatagramPacket packet = new DatagramPacket(buff, buff.length, InetAddress.getByName("localhost"), PORT);
+
+                DatagramPacket packet = new DatagramPacket(CMD_ANNOUNCE.getBytes(), CMD_ANNOUNCE.length(), InetAddress.getByName("192.168.0.255"), PORT);
                 while(true){
                     mSocket.send(packet);
                     try{

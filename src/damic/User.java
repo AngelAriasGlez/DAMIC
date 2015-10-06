@@ -24,6 +24,7 @@ public class User {
         return mName;
     }
     public void setRemoteAddress(InetAddress addr){
+        mName = addr.getHostAddress();
         mRemoteAddress = addr;
     }
 }
