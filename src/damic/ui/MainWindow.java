@@ -9,33 +9,47 @@ import java.awt.Toolkit;
 import damic.*;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+import javax.swing.Timer;
 
 /**
  *
  * @author Angel
  */
 public class MainWindow extends javax.swing.JFrame {
-
+        Broadcast br = new Broadcast();
+        DefaultListModel listModel = new DefaultListModel();
+        ArrayList<User> listUsers = new ArrayList<>();
     /**
      * Creates new form MainWindow
      */
     public MainWindow() {
         initComponents();
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icon.png")));
+        
+        
 
+        br.start();
+        
         jList2.setCellRenderer(new UserCellRenderer());
-
-        DefaultListModel listModel = new DefaultListModel();
-        listModel.addElement(new Chat(new User("Jane Doe")));
-        listModel.addElement(new Chat(new User("John Smith")));
-        listModel.addElement(new Chat(new User("Kathy Green")));
-
         jList2.setModel(listModel);
+        
+        Timer timer = new Timer (500, new ActionListener (){ 
+            public void actionPerformed(ActionEvent e){
+                User u = br.pollUser();
+                if(u != null){
+                    listUsers.add(u);
+                    listModel.addElement(new Chat(u));
+                }
+            }
+        }); 
+        timer.start();
     }
 
     class UserCellRenderer extends JLabel implements ListCellRenderer {
