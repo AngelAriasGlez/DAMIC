@@ -12,7 +12,7 @@ import java.net.InetAddress;
  * @author Angel
  */
 public class User {
-    String mName = "xx"; 
+    String mName = ""; 
     InetAddress mRemoteAddress;
     public User(){
 
