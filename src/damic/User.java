@@ -13,7 +13,7 @@ import java.net.InetAddress;
  */
 public class User {
     String mName = ""; 
-    InetAddress mRemoteAddress;
+    String mAddress = "";
     public User(){
 
     }
@@ -23,8 +23,11 @@ public class User {
     public String getName(){
         return mName;
     }
-    public void setRemoteAddress(InetAddress addr){
-        mName = addr.getHostAddress();
-        mRemoteAddress = addr;
+    public void setAddress(String addr){
+        mName = addr;
+        mAddress = addr;
     }
+     public String getAddress(){
+        return mAddress;
+    }  
 }
