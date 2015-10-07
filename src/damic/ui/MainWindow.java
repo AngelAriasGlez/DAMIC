@@ -9,10 +9,16 @@ import damic.DAMIC;
 import damic.Message;
 import damic.User;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
  *
@@ -33,6 +39,21 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         setVisible(true);
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icon.png")));
+        
+        
+        Action action = new AbstractAction(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+               send();
+            }
+        };
+        
+        jTextField1.setAction(action);
+        
+        jTextPane1.setContentType( "text/html" );
+        jTextPane1.setText("<html style=\"font:Serif;\">");
+        jTextPane1.setEditable(false);
+        jTextPane1.setCaretColor(jTextPane1.getBackground());
     }
 
     /**
@@ -51,6 +72,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("DAMIC");
+        setResizable(false);
 
         jScrollPane1.setViewportView(jTextPane1);
 
@@ -79,7 +101,7 @@ public class MainWindow extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
@@ -91,25 +113,37 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        DAMIC.getInstance().send(new Message(jTextField1.getText()));
-        jTextField1.setText("");
+        send();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    public void send(){
+        DAMIC.getInstance().send(new Message(jTextField1.getText()));
+        jTextField1.setText("");   
+    }
     
     public void appendMessage(User usr, Message msg){
         
                 
-        
-        
-        
-        StyledDocument doc = jTextPane1.getStyledDocument();
-        
 
+        HTMLDocument doc = (HTMLDocument)jTextPane1.getDocument();
+        HTMLEditorKit editorKit = (HTMLEditorKit)jTextPane1.getEditorKit();
+        String text = "";
+        if(usr.getAddress().toString().equals(DAMIC.getInstance().getSelf().getAddress().toString())){
+             text = "<div  style=\"background:#e0eeee;padding:5px; margin-bottom:3px\"><span style=\"color:#aaaaaa;\">" + usr.getName() + " </span> " + msg.toString() + "</div>";
+        }else{
+             text = "<div  style=\"text-align:right;background:#eeeeee;padding:5px; margin-bottom:3px\">" + msg.toString() + "</div>";
+        }
         try {
-            doc.insertString(doc.getLength(), usr.getName() + " >> " + msg.toString() + "\n", null);
-        } catch (BadLocationException ex) {
+            editorKit.insertHTML(doc, doc.getLength(), text, 0, 0, null);
+        } catch (BadLocationException | IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
+        jTextPane1.setCaretPosition(doc.getLength());
+        
+        
+        
+
+
         
 
 
