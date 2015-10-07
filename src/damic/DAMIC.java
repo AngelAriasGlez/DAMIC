@@ -11,9 +11,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import javax.swing.SwingUtilities;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,8 +35,20 @@ public class DAMIC{
     
     public static String CMD_MESSAGE = "MSG";
     
+    User mUser;
+    
     public DAMIC(){
+        mUser = new User();
+        try {
+            mUser.setAddress(InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(DAMIC.class.getName()).log(Level.SEVERE, null, ex);
+        }
         new ListenThread().start();
+    }
+    
+    public User getSelf(){
+        return mUser;
     }
 
     class ListenThread extends Thread{
@@ -44,7 +58,7 @@ public class DAMIC{
             try {
                 mSocket = new DatagramSocket(PORT);
 
-                byte[] buff = new byte[1024];
+                byte[] buff = new byte[1024*10];
                 DatagramPacket packet = new DatagramPacket(buff, buff.length);
                 while(true){
                         mSocket.receive(packet);
@@ -66,7 +80,7 @@ public class DAMIC{
         try{
             DatagramSocket socket = new DatagramSocket();
             String msgstr = CMD_MESSAGE + "  " + msg.toString();
-            DatagramPacket packet = new DatagramPacket(msgstr.getBytes(), msgstr.length(), InetAddress.getByName("192.168.0.255"), PORT);
+            DatagramPacket packet = new DatagramPacket(msgstr.getBytes(), msgstr.length(), InetAddress.getByName("255.255.255.255"), PORT);
             socket.send(packet);
             socket.close();
         }catch (IOException e){
