@@ -8,10 +8,15 @@ package damic;
 
 import damic.ui.MainWindow;
 import java.io.IOException;
+import static java.lang.System.out;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
@@ -40,16 +45,40 @@ public class DAMIC{
     public DAMIC(){
         mUser = new User();
         try {
-            mUser.setAddress(InetAddress.getLocalHost().getHostAddress());
-        } catch (UnknownHostException ex) {
+            InetAddress ia = getEthInterfaceInformation();
+            if(ia != null)
+                mUser.setAddress(ia.getHostAddress());
+        } catch (SocketException ex) {
             Logger.getLogger(DAMIC.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         new ListenThread().start();
+        
+
     }
     
     public User getSelf(){
         return mUser;
     }
+    
+    static InetAddress getEthInterfaceInformation() throws SocketException {
+        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+        for (NetworkInterface netint : Collections.list(nets)){
+            //out.printf("Display name: %s\n", netint.getDisplayName());
+            //out.printf("Name: %s\n", netint.getName());
+            if(!netint.isLoopback()){
+                Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+                for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+                    if(inetAddress instanceof Inet4Address){
+                        out.printf("InetAddress: %s\n", inetAddress);
+                        return inetAddress;
+                    }
+                }
+            }
+ 
+        }
+        return null;
+     }
 
     class ListenThread extends Thread{
         DatagramSocket mSocket;
@@ -67,7 +96,7 @@ public class DAMIC{
                         String data = new String(packet.getData(), 4, packet.getLength());
                         if(cmd.equals(CMD_MESSAGE)){
                             User u = new User();
-                            u.setAddress(packet.getAddress().getHostAddress());
+                            u.setAddress(packet.getAddress().getCanonicalHostName());
                             MainWindow.getInstance().appendMessage(u, new Message(data));
                         }
                 }
