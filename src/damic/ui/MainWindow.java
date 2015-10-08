@@ -59,7 +59,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         jTextPane2.setContentType( "text/html" );
         jTextPane2.setCaretPosition(0);
-
+        jTextPane2.grabFocus();
         
         emotiWindow = new JWindow();
         emotiWindow.add(new EmotiPanel());
