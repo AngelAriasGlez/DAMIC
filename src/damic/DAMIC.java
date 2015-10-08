@@ -62,11 +62,14 @@ public class DAMIC{
         mUser.setName(username);
     }
     
-    public User getSelf(){
+    public User getUser(){
         return mUser;
     }
+    public void setUser(User usr){
+        mUser = usr;
+    }
     
-    static InetAddress getEthInterfaceInformation() throws SocketException {
+    public static InetAddress getEthInterfaceInformation() throws SocketException {
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
         for (NetworkInterface netint : Collections.list(nets)){
             //out.printf("Display name: %s\n", netint.getDisplayName());

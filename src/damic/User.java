@@ -21,7 +21,7 @@ public class User {
         mName = name;
     }
     public String getName(){
-        if(mName.length() > 0){
+        if(mName != null && mName.length() > 0){
             return mName;
         }
         return mAddress;
