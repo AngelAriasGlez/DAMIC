@@ -56,9 +56,9 @@ public class DAMIC{
         new ListenThread().start();
         
         String username = JOptionPane.showInputDialog(
-            null,
-            "Username",
-            JOptionPane.QUESTION_MESSAGE);  // el icono sera un iterrogante
+            MainWindow.getInstance(),
+            "Username :" 
+            );  // el icono sera un iterrogante
         mUser.setName(username);
     }
     
@@ -101,7 +101,7 @@ public class DAMIC{
                         String data = new String(packet.getData(), 4, packet.getLength());
                         if(cmd.equals(CMD_MESSAGE)){
                             String usrname = data.substring(data.indexOf("¶")+1, data.lastIndexOf("¶"));
-                            String msg = data.substring(data.lastIndexOf("¶")+2, data.length());        
+                            String msg = data.substring(data.lastIndexOf("¶")+2, data.length()+1);        
                             
                             User u = new User();
                             u.setName(usrname);
