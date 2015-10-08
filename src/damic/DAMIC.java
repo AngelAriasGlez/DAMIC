@@ -21,6 +21,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -54,7 +55,11 @@ public class DAMIC{
 
         new ListenThread().start();
         
-
+        String username = JOptionPane.showInputDialog(
+            null,
+            "Username",
+            JOptionPane.QUESTION_MESSAGE);  // el icono sera un iterrogante
+        mUser.setName(username);
     }
     
     public User getSelf(){
@@ -95,9 +100,13 @@ public class DAMIC{
                         String cmd = new String(packet.getData(), 0, 3);
                         String data = new String(packet.getData(), 4, packet.getLength());
                         if(cmd.equals(CMD_MESSAGE)){
+                            String usrname = data.substring(data.indexOf("¶")+1, data.lastIndexOf("¶"));
+                            String msg = data.substring(data.lastIndexOf("¶")+2, data.length());        
+                            
                             User u = new User();
+                            u.setName(usrname);
                             u.setAddress(packet.getAddress().getCanonicalHostName());
-                            MainWindow.getInstance().appendMessage(u, new Message(data));
+                            MainWindow.getInstance().appendMessage(u, new Message(msg));
                         }
                 }
 
@@ -112,7 +121,7 @@ public class DAMIC{
     public void send(Message msg){
         try{
             DatagramSocket socket = new DatagramSocket();
-            String msgstr = CMD_MESSAGE + "  " + msg.toString();
+            String msgstr = CMD_MESSAGE + " ¶" + mUser.getName() +"¶ " + msg.toString();
             DatagramPacket packet = new DatagramPacket(msgstr.getBytes(), msgstr.length(), InetAddress.getByName("255.255.255.255"), PORT);
             socket.send(packet);
             socket.close();

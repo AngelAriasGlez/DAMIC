@@ -21,7 +21,13 @@ public class User {
         mName = name;
     }
     public String getName(){
-        return mName;
+        if(mName.length() > 0){
+            return mName;
+        }
+        return mAddress;
+    }
+    public void setName(String name){
+        mName = name;
     }
     public void setAddress(String addr){
         mName = addr;
