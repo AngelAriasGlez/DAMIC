@@ -58,21 +58,25 @@ public class DAMIC{
             try {
                 mSocket = new DatagramSocket(PORT);
 
-                byte[] buff = new byte[1024*10];
-                DatagramPacket packet = new DatagramPacket(buff, buff.length);
+                
                 while(true){
+                        byte[] buff = new byte[1024*10];
+                        DatagramPacket packet = new DatagramPacket(buff, buff.length);
                         mSocket.receive(packet);
                         String cmd = new String(packet.getData(), 0, 3);
                         String data = new String(packet.getData(), 4, packet.getLength());
                         if(cmd.equals(CMD_MESSAGE)){
-                            MainWindow.getInstance().appendMessage(new User(packet.getAddress().getHostAddress()), new Message(data));
+                            User u = new User();
+                            u.setAddress(packet.getAddress().getHostAddress());
+                            MainWindow.getInstance().appendMessage(u, new Message(data));
                         }
                 }
+
             
             }catch (IOException e){
                     System.out.println(e.getMessage());
             }
-            mSocket.close();
+            //mSocket.close();
         }
 
     }

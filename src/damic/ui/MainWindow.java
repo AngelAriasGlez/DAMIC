@@ -128,10 +128,11 @@ public class MainWindow extends javax.swing.JFrame {
         HTMLDocument doc = (HTMLDocument)jTextPane1.getDocument();
         HTMLEditorKit editorKit = (HTMLEditorKit)jTextPane1.getEditorKit();
         String text = "";
-        if(usr.getAddress().toString().equals(DAMIC.getInstance().getSelf().getAddress().toString())){
-             text = "<div  style=\"background:#e0eeee;padding:5px; margin-bottom:3px\"><span style=\"color:#aaaaaa;\">" + usr.getName() + " </span> " + msg.toString() + "</div>";
+        User self = DAMIC.getInstance().getSelf();
+        if(usr.getAddress().equals(self.getAddress())){
+            text = "<div  style=\"text-align:right;background:#e0e0ee;padding:5px; margin-bottom:3px\">" + msg.toString() + "</div>";
         }else{
-             text = "<div  style=\"text-align:right;background:#eeeeee;padding:5px; margin-bottom:3px\">" + msg.toString() + "</div>";
+            text = "<div  style=\"background:#e0eee0#e0e0ee;padding:5px; margin-bottom:3px\"><span style=\"color:#aaaaaa;\">" + usr.getName() + " </span> " + msg.toString() + "</div>";
         }
         try {
             editorKit.insertHTML(doc, doc.getLength(), text, 0, 0, null);
