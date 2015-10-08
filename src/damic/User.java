@@ -30,7 +30,6 @@ public class User {
         mName = name;
     }
     public void setAddress(String addr){
-        mName = addr;
         mAddress = addr;
     }
      public String getAddress(){

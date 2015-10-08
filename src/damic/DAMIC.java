@@ -100,8 +100,8 @@ public class DAMIC{
                         String cmd = new String(packet.getData(), 0, 3);
                         String data = new String(packet.getData(), 4, packet.getLength());
                         if(cmd.equals(CMD_MESSAGE)){
-                            String usrname = data.substring(data.indexOf("¶")+1, data.lastIndexOf("¶"));
-                            String msg = data.substring(data.lastIndexOf("¶")+2, data.length()+1);        
+                            String usrname = data.substring(data.indexOf("'")+1, data.lastIndexOf("'"));
+                            String msg = data.substring(data.lastIndexOf("'")+2, data.length());        
                             
                             User u = new User();
                             u.setName(usrname);
@@ -121,7 +121,7 @@ public class DAMIC{
     public void send(Message msg){
         try{
             DatagramSocket socket = new DatagramSocket();
-            String msgstr = CMD_MESSAGE + " ¶" + mUser.getName() +"¶ " + msg.toString();
+            String msgstr = CMD_MESSAGE + " '" + mUser.getName() +"' " + msg.toString();
             DatagramPacket packet = new DatagramPacket(msgstr.getBytes(), msgstr.length(), InetAddress.getByName("255.255.255.255"), PORT);
             socket.send(packet);
             socket.close();
@@ -160,8 +160,8 @@ public class DAMIC{
             java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         
-        MainWindow.getInstance();
         DAMIC.getInstance();
+        MainWindow.getInstance();
     }
 
 }
