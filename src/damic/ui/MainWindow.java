@@ -13,7 +13,6 @@ import emoti.Emoti;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Frame;
-
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
@@ -21,6 +20,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowStateListener;
 import java.io.IOException;
 import java.net.SocketException;
@@ -43,7 +43,7 @@ import javax.swing.text.html.StyleSheet;
  *
  * @author Angel
  */
-public class MainWindow extends javax.swing.JFrame {
+public class MainWindow extends javax.swing.JFrame implements WindowFocusListener{
     int mUnreadMsg = 0;
     
     
@@ -128,16 +128,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         
 
-        addFocusListener(new FocusListener(){
-           @Override
-           public void focusGained(FocusEvent fe){
-               mUnreadMsg = 0;
-               setTitle("DAMIC");
-           }
-           public void focusLost(FocusEvent e) {
-                
-           }
-        });
+        addWindowFocusListener(this);
 
         pack();
         setVisible(true);
@@ -405,4 +396,15 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextPane jTextPane1;
     private javax.swing.JTextPane jTextPane2;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void windowGainedFocus(WindowEvent e) {
+                mUnreadMsg = 0;
+               setTitle("DAMIC");
+    }
+
+    @Override
+    public void windowLostFocus(WindowEvent e) {
+        
+    }
 }
