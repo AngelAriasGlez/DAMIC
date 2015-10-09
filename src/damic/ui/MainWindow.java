@@ -12,12 +12,16 @@ import damic.Utils;
 import emoti.Emoti;
 import java.awt.Cursor;
 import java.awt.Desktop;
+import java.awt.Frame;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.URISyntaxException;
@@ -40,7 +44,9 @@ import javax.swing.text.html.StyleSheet;
  * @author Angel
  */
 public class MainWindow extends javax.swing.JFrame {
-
+    int mUnreadMsg = 0;
+    
+    
     private static MainWindow mInstance = null;
     public static MainWindow getInstance(){
         if(mInstance == null){
@@ -122,9 +128,21 @@ public class MainWindow extends javax.swing.JFrame {
 
         
 
+        addFocusListener(new FocusListener(){
+           @Override
+           public void focusGained(FocusEvent fe){
+               mUnreadMsg = 0;
+               setTitle("DAMIC");
+           }
+           public void focusLost(FocusEvent e) {
+                
+           }
+        });
+
         pack();
         setVisible(true);
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -299,6 +317,7 @@ public class MainWindow extends javax.swing.JFrame {
         String text = jTextPane2.getText();
         text = text.replaceAll("<img[^>]*src=[\\\"']([^\"]*)\\/([^\\.\\\"]*)\\.?[^\"]*[\\\"'][^>]*>", "$2");
         text = text.replaceAll("\\<[^>]*>","");
+
         if(text.replaceAll("[\r\n ]","").isEmpty()) return;
         DAMIC.getInstance().send(new Message(text));
         
@@ -306,6 +325,15 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     public void appendMessage(User usr, Message msg){
+        if(!this.isFocused()){
+            mUnreadMsg++;
+        }
+        if(mUnreadMsg > 0){
+            this.setTitle("DAMIC ("+mUnreadMsg+")");
+        }else{
+            this.setTitle("DAMIC");
+        }
+        
         //Toolkit.getDefaultToolkit().beep();
         if(msg.toString().contains("1f50a")){
             Toolkit.getDefaultToolkit().beep();
@@ -319,6 +347,7 @@ public class MainWindow extends javax.swing.JFrame {
         while(m.find()) {
             String url = m.group(0);
             try {
+                
                 String contentType = Utils.getContentType(url);
                 if(contentType.contains("image")){
                     html = html.substring(0, m.start()) + "<a href=\""+url+"\">"+url+"</a> <br/><br/> <img src=\""+url+"\">" + html.substring(m.end(), html.length());
@@ -344,7 +373,7 @@ public class MainWindow extends javax.swing.JFrame {
             text = "<div  style=\"background:#e0eee0#e0e0ee;padding:5px; margin-bottom:3px\"><span style=\"color:#aaaaaa;\">" + usr.getName() + " </span> " + html + "</div>";
         }
         try {
-          doc.insertBeforeEnd(doc.getDefaultRootElement().getElement(0), text);
+            doc.insertBeforeEnd(doc.getDefaultRootElement().getElement(0), text);
         } catch (BadLocationException | IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
