@@ -74,7 +74,7 @@ public class DAMIC{
         for (NetworkInterface netint : Collections.list(nets)){
             //out.printf("Display name: %s\n", netint.getDisplayName());
             //out.printf("Name: %s\n", netint.getName());
-            if(!netint.isLoopback()){
+            if(!netint.isLoopback() && !netint.getName().contains("virbr")){
                 Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
                 for (InetAddress inetAddress : Collections.list(inetAddresses)) {
                     if(inetAddress instanceof Inet4Address){
