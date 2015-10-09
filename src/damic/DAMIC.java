@@ -46,7 +46,7 @@ public class DAMIC{
     public DAMIC(){
         mUser = new User();
         try {
-            InetAddress ia = getEthInterfaceInformation();
+            InetAddress ia = Utils.getEthInterfaceInformation();
             if(ia != null)
                 mUser.setAddress(ia.getHostAddress());
         } catch (SocketException ex) {
@@ -69,24 +69,7 @@ public class DAMIC{
         mUser = usr;
     }
     
-    public static InetAddress getEthInterfaceInformation() throws SocketException {
-        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-        for (NetworkInterface netint : Collections.list(nets)){
-            //out.printf("Display name: %s\n", netint.getDisplayName());
-            //out.printf("Name: %s\n", netint.getName());
-            if(!netint.isLoopback() && !netint.getName().contains("virbr")){
-                Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
-                for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-                    if(inetAddress instanceof Inet4Address){
-                        out.printf("InetAddress: %s\n", inetAddress);
-                        return inetAddress;
-                    }
-                }
-            }
  
-        }
-        return null;
-     }
 
     class ListenThread extends Thread{
         DatagramSocket mSocket;

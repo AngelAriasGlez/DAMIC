@@ -8,6 +8,7 @@ package damic.ui;
 import damic.DAMIC;
 import damic.Message;
 import damic.User;
+import damic.Utils;
 import emoti.Emoti;
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -22,6 +23,8 @@ import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -275,7 +278,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         
         try {
-            JOptionPane.showMessageDialog(this, "Your IP is " +  DAMIC.getEthInterfaceInformation().getHostAddress() + "\n" + DAMIC.getEthInterfaceInformation().getCanonicalHostName() + "\n\n Angel Arias Gonzalez - 2015");
+            JOptionPane.showMessageDialog(this, "Your IP is " +  Utils.getEthInterfaceInformation().getHostAddress() + "\n" + Utils.getEthInterfaceInformation().getCanonicalHostName() + "\n\n Angel Arias Gonzalez - 2015");
         } catch (SocketException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -311,9 +314,24 @@ public class MainWindow extends javax.swing.JFrame {
         }
         
         String html = Emoti.replace(msg.toString());
-        html = html.replaceAll("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z)",
-        "$1<a href=\"$2\">$2</a>$4");
+        Pattern p = Pattern.compile("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z)");
+        Matcher m = p.matcher(html);
+        while(m.find()) {
+            String url = m.group(0);
+            try {
+                String contentType = Utils.getContentType(url);
+                if(contentType.contains("image")){
+                    html = html.substring(0, m.start()) + "<a href=\""+url+"\">"+url+"</a> <br/><br/> <img src=\""+url+"\">" + html.substring(m.end(), html.length());
+                }else{
+                    html = html.substring(0, m.start()) + "<a href=\""+url+"\">"+url+"</a>" + html.substring(m.end(), html.length());
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
+
+        }
+ 
 
         HTMLDocument doc = (HTMLDocument)jTextPane1.getDocument();
 
