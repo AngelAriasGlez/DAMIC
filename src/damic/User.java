@@ -24,10 +24,7 @@ public class User {
         mName = name;
     }
     public String getName(){
-        if(mName != null && mName.length() > 0){
-            return mName;
-        }
-        return mAddress;
+        return mName;
     }
     public void setName(String name){
         mName = name;
@@ -44,5 +41,13 @@ public class User {
     }
     public boolean isOnline(){
         return (System.currentTimeMillis()-mPrevOnline < ONLINE_TIMEOT);
+    }
+    
+    @Override
+    public String toString(){
+        if(mName != null && mName.length() > 0){
+            return mName;
+        }
+        return mAddress;
     }
 }

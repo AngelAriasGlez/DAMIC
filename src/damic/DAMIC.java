@@ -73,6 +73,16 @@ public class DAMIC{
         }); 
         timer.start();
         
+        Timer timer2; 
+        timer2 = new Timer (2000, new ActionListener () { 
+            @Override
+            public void actionPerformed(ActionEvent e){ 
+                broadcastUsername();
+            }
+        }); 
+        timer2.start();
+        
+        
 
     }
     
@@ -104,7 +114,7 @@ public class DAMIC{
     
     
     void process(){
-        removeOfflineUsers();
+        //removeOfflineUsers();
         
         InputData id = mListener.pollData();
         if(id == null){
@@ -119,7 +129,7 @@ public class DAMIC{
                 String usrname = id.data.substring(fo, id.data.indexOf("'", fo));
                 remoteuser.setName(usrname);
             }
-    
+            MainWindow.getInstance().setOnlineUsers(mOnlineUsers);
     }
     
     
@@ -161,19 +171,18 @@ public class DAMIC{
         }
 
     }
-    public void sendMessage(Message msg){
-            send(CMD_MESSAGE + " " + msg.toString());
+    public void broadcastMessage(Message msg){
+            broadcast(CMD_MESSAGE + " " + msg.toString());
     }
-    public void sendUsername(Message msg){
-            send(CMD_USERNAME + " '" + mUser.getName() + "'");
+    public void broadcastUsername(){
+        if(!mUser.getName().isEmpty())
+            broadcast(CMD_USERNAME + " '" + mUser.getName() + "'");
     }
     
-     public void send(String str){
-        try{
-            DatagramSocket socket = new DatagramSocket();
+     public void broadcast(String str){
+        try(DatagramSocket socket = new DatagramSocket()) {
             DatagramPacket packet = new DatagramPacket(str.getBytes(), str.length(), InetAddress.getByName("255.255.255.255"), PORT);
             socket.send(packet);
-            socket.close();
         }catch (IOException e){
             System.out.println(e.getMessage());
         }
