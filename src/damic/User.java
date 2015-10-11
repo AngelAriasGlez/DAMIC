@@ -13,7 +13,7 @@ import java.net.InetAddress;
  */
 public class User {
     private static final int ONLINE_TIMEOT = 3000;
-    public static User SELF; 
+    public static User SELF = new User(); 
     
     String mName = ""; 
     String mAddress = "";

@@ -37,6 +37,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
 
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -72,9 +73,11 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
 
         StyleSheet styleSheet = ((HTMLEditorKit) jTextPane1.getEditorKit()).getStyleSheet();
         styleSheet.addRule("body {color:#000; font-family:Helvetica; margin: 4px;}");
+        styleSheet.addRule("p {margin:0;padding:0;}");
+        
 
         //jTextPane1.setText("<html style=\"font:'"+getClass().getResource("hn.otf")+"';\">");
-        jTextPane1.setEditable(false);
+        //jTextPane1.setEditable(false);
         jTextPane1.setCaretColor(jTextPane1.getBackground());
         jTextPane1.addHyperlinkListener(new HyperlinkListener() {
             public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -93,6 +96,9 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
 
 
         jTextPane2.setContentType("text/html");
+        StyleSheet styleSheet2 = ((HTMLEditorKit) jTextPane2.getEditorKit()).getStyleSheet();
+        styleSheet2.addRule("p {margin:0;padding:0;}");
+        
         jTextPane2.setText("<html><body><p id=\"mn\"></p></body></html>");
         jTextPane2.setCaretPosition(0);
         jTextPane2.grabFocus();
@@ -330,6 +336,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         int i =0 ;
         for(User u : users){
             listModel.add(i++, u);
+            listModel.add(i++, u);
         }
         jList1.setModel(listModel);
     }
@@ -349,9 +356,16 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
     public void send() {
         String text = jTextPane2.getText();
         text = text.replaceAll("<img[^>]*src=[\\\"']([^\"]*)\\/([^\\.\\\"]*)\\.?[^\"]*[\\\"'][^>]*>", "$2");
-        text = text.replaceAll("\\<[^>]*>", "");
+       
+        text = text.replaceAll("\n", "");
+        text = text.replaceAll("</p>", "\n");
+        int index = text.lastIndexOf("\n");
+        if (index > -1)
+        text =  text.substring(0, index) + "" + text.substring(index+1, text.length());
 
-        if (text.replaceAll("[\r\n ]", "").isEmpty()) {
+
+        text = text.replaceAll("\\<[^>]*>", "");
+        if (text.replaceAll(" ", "").isEmpty()) {
             return;
         }
         DAMIC.getInstance().broadcastMessage(new Message(text));
@@ -375,8 +389,10 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
             System.out.print("\007");
             System.out.flush();
         }
-
-        String html = Emoti.replace(msg.toString());
+        String html = msg.toString();
+        html = html.replaceAll("\n", "<br/>");
+        html = Emoti.replace(html);
+        
         Pattern p = Pattern.compile("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z)");
         Matcher m = p.matcher(html);
         while (m.find()) {
@@ -398,11 +414,10 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         HTMLDocument doc = (HTMLDocument) jTextPane1.getDocument();
 
         String text = "";
-        User self = User.SELF;
-        if (usr.getAddress().equals(self.getAddress())) {
-            text = "<div  style=\"text-align:right;background:#e0e0ee;padding:5px; margin:0px 10px 5px 10px\">" + html + "</div>";
+        if (usr == User.SELF) {
+            text = "<p  style=\"text-align:right;background:#e0e0ee;padding:5px; margin:0px 10px 5px 10px\">" + html + "</p>";
         } else {
-            text = "<div  style=\"background:#e0eee0#e0e0ee;padding:5px; margin-bottom:3px\"><span style=\"color:#aaaaaa;\">" + usr.getName() + " </span> " + html + "</div>";
+            text = "<p  style=\"background:#e0eee0#e0e0ee;padding:5px; margin:0px 10px 5px 10px\"><span style=\"color:#aaaaaa;\"><i>" + usr.toString() + "</i></span> " + html + "</p>";
         }
         try {
             doc.insertBeforeEnd(doc.getDefaultRootElement().getElement(0), text);
@@ -455,16 +470,19 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
 
 
     public UserCellRenderer() {
-        setOpaque(true);
-        setIconTextGap(12);
-        setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+
+
     }
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value,
       int index, boolean isSelected, boolean cellHasFocus) {
+        if(value instanceof String){
+        
+        }
         User entry = (User) value;
-        setText(entry.toString());
+        
+        setText("<html><body><div  width=\"100%\" style=\"padding:2px;\"><p width=\"100%\" style=\"background:#cccccc;padding:20; font-size:14\">"+entry.toString()+"</p></div></body></html>");
     return this;
   }
 }

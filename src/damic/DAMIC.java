@@ -49,7 +49,7 @@ public class DAMIC{
     String mSelfIp = "";
     
     public DAMIC(){
-        User.SELF = new User();
+
         try {
             InetAddress ia = Utils.getEthInterfaceInformation();
             if(ia != null)
@@ -183,8 +183,8 @@ public class DAMIC{
     }
     public void broadcastUpdate(){
         String s = CMD_UPDATE;
-                if(!User.SELF.getName().isEmpty())
-                    s.concat(" '" + User.SELF.getName() + "'");
+                if(!(User.SELF.getName()).isEmpty())
+                    s = s.concat(" '" + User.SELF.getName() + "'");
             broadcast(s);
     }
     
