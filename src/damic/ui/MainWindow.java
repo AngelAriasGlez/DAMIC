@@ -483,7 +483,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         }
         User entry = (User) value;
         
-        setText("<html><body><div style=\"background:#eeeeee;padding-bottom:2px;\"><p width=\"144px\" style=\"background:#f4f4f4;padding:20; font-size:14;\"><img align=\"middle\" src=\""+getClass().getResource("online.png")+"\"/>"+entry.toString()+"</p></div></body></html>");
+        setText("<html><body><div style=\"background:#eeeeee;padding-bottom:2px;\"><p width=\"144px\" style=\"background:#f4f4f4;padding:20 15 15 15; font-size:14;\"><img align=\"middle\" src=\""+getClass().getResource("online.png")+"\"/>"+entry.toString()+"</p></div></body></html>");
     return this;
   }
 }
