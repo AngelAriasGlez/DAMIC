@@ -40,7 +40,7 @@ public class DAMIC{
     public static int PORT = 4445;
     
     public static String CMD_MESSAGE = "MSG";
-    public static String CMD_USERNAME = "NME";
+    public static String CMD_UPDATE = "UPD";
     
     User mUser;
     
@@ -77,7 +77,7 @@ public class DAMIC{
         timer2 = new Timer (2000, new ActionListener () { 
             @Override
             public void actionPerformed(ActionEvent e){ 
-                broadcastUsername();
+                broadcastUpdate();
             }
         }); 
         timer2.start();
@@ -124,10 +124,13 @@ public class DAMIC{
             remoteuser.online();
             if(id.cmd.equals(CMD_MESSAGE)){
                 MainWindow.getInstance().appendMessage(remoteuser, new Message(id.data));
-            }else if(id.cmd.equals(CMD_USERNAME)){
-                int fo = id.data.indexOf("'")+1;
-                String usrname = id.data.substring(fo, id.data.indexOf("'", fo));
-                remoteuser.setName(usrname);
+            }else if(id.cmd.equals(CMD_UPDATE)){
+                int fo = id.data.indexOf("'");
+                if(fo > -1){
+                    fo++;
+                    String usrname = id.data.substring(fo, id.data.indexOf("'", fo));
+                    remoteuser.setName(usrname);
+                }
             }
             MainWindow.getInstance().setOnlineUsers(mOnlineUsers);
     }
@@ -174,9 +177,11 @@ public class DAMIC{
     public void broadcastMessage(Message msg){
             broadcast(CMD_MESSAGE + " " + msg.toString());
     }
-    public void broadcastUsername(){
-        if(!mUser.getName().isEmpty())
-            broadcast(CMD_USERNAME + " '" + mUser.getName() + "'");
+    public void broadcastUpdate(){
+        String s = CMD_UPDATE;
+                if(!mUser.getName().isEmpty())
+                    s.concat(" '" + mUser.getName() + "'");
+            broadcast(s);
     }
     
      public void broadcast(String str){

@@ -27,13 +27,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
@@ -209,6 +209,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
+        jList1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jScrollPane2.setViewportView(jList1);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -330,6 +331,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         for(User u : users){
             listModel.add(i++, u);
         }
+        jList1.setModel(listModel);
     }
     
     
@@ -455,13 +457,14 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
     public UserCellRenderer() {
         setOpaque(true);
         setIconTextGap(12);
+        setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
     }
 
+    @Override
     public Component getListCellRendererComponent(JList list, Object value,
       int index, boolean isSelected, boolean cellHasFocus) {
         User entry = (User) value;
-        setText(entry.getName());
-
+        setText(entry.toString());
     return this;
   }
 }
