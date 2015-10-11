@@ -33,6 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListModel;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
@@ -323,10 +324,11 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
     }//GEN-LAST:event_jMenu1MouseClicked
 
     public void setOnlineUsers(ArrayList<User> users){
-        DefaultListModel model = (DefaultListModel)jList1.getModel();
-        users.clear();
+        DefaultListModel listModel = new DefaultListModel();
+        listModel.clear();
+        int i =0 ;
         for(User u : users){
-            users.add(u);
+            listModel.add(i++, u);
         }
     }
     
@@ -350,7 +352,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         if (text.replaceAll("[\r\n ]", "").isEmpty()) {
             return;
         }
-        DAMIC.getInstance().sendMessage(new Message(text));
+        DAMIC.getInstance().broadcastMessage(new Message(text));
 
         jTextPane2.setText("<html><body><p id=\"mn\"></p></body></html>");
     }
