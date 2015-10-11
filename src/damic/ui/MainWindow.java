@@ -215,6 +215,8 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
+        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
         jList1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jScrollPane2.setViewportView(jList1);
 
@@ -335,8 +337,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         listModel.clear();
         int i =0 ;
         for(User u : users){
-            listModel.add(i++, u);
-            listModel.add(i++, u);
+            listModel.add(i++, u);  
         }
         jList1.setModel(listModel);
     }
@@ -482,7 +483,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         }
         User entry = (User) value;
         
-        setText("<html><body><div  width=\"100%\" style=\"padding:2px;\"><p width=\"100%\" style=\"background:#cccccc;padding:20; font-size:14\">"+entry.toString()+"</p></div></body></html>");
+        setText("<html><body><div style=\"background:#eeeeee;padding-bottom:2px;\"><p width=\"144px\" style=\"background:#f4f4f4;padding:20; font-size:14;\"><img align=\"middle\" src=\""+getClass().getResource("online.png")+"\"/>"+entry.toString()+"</p></div></body></html>");
     return this;
   }
 }
