@@ -307,9 +307,9 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
                 this,
                 "Username :"
         );  // el icono sera un iterrogante
-        User u = DAMIC.getInstance().getUser();
+        User u = User.SELF;
         u.setName(username);
-        DAMIC.getInstance().setUser(u);
+
         jLabel1.setText(username);
     
     }
@@ -398,7 +398,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         HTMLDocument doc = (HTMLDocument) jTextPane1.getDocument();
 
         String text = "";
-        User self = DAMIC.getInstance().getUser();
+        User self = User.SELF;
         if (usr.getAddress().equals(self.getAddress())) {
             text = "<div  style=\"text-align:right;background:#e0e0ee;padding:5px; margin:0px 10px 5px 10px\">" + html + "</div>";
         } else {

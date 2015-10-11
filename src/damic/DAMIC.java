@@ -42,16 +42,19 @@ public class DAMIC{
     public static String CMD_MESSAGE = "MSG";
     public static String CMD_UPDATE = "UPD";
     
-    User mUser;
+
     
     ArrayList<User>  mOnlineUsers = new ArrayList();
     
+    String mSelfIp = "";
+    
     public DAMIC(){
-        mUser = new User();
+        User.SELF = new User();
         try {
             InetAddress ia = Utils.getEthInterfaceInformation();
             if(ia != null)
-                mUser.setAddress(ia.getHostAddress());
+                mSelfIp = ia.getHostAddress();
+                User.SELF.setAddress(mSelfIp);
         } catch (SocketException ex) {
             Logger.getLogger(DAMIC.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -86,14 +89,12 @@ public class DAMIC{
 
     }
     
-    public User getUser(){
-        return mUser;
-    }
-    public void setUser(User usr){
-        mUser = usr;
-    }
+
     
     public User getUserByIp(String ip){
+        if(ip.equals(mSelfIp)){
+            return User.SELF;
+        }
         for(User u : mOnlineUsers){
             if(u.getAddress().equals(ip)){
                 return u;
@@ -105,16 +106,19 @@ public class DAMIC{
         return u;
     }
     public void removeOfflineUsers(){
-        for(User u : mOnlineUsers){
-            if(!u.isOnline()){
-                mOnlineUsers.remove(u);
+        
+        for (int j = mOnlineUsers.size()-1; j >= 0; j--) {
+            if(!mOnlineUsers.get(j).isOnline()){
+                mOnlineUsers.remove(j);
             }
+
         }
+
     }
     
     
     void process(){
-        //removeOfflineUsers();
+        removeOfflineUsers();
         
         InputData id = mListener.pollData();
         if(id == null){
@@ -179,8 +183,8 @@ public class DAMIC{
     }
     public void broadcastUpdate(){
         String s = CMD_UPDATE;
-                if(!mUser.getName().isEmpty())
-                    s.concat(" '" + mUser.getName() + "'");
+                if(!User.SELF.getName().isEmpty())
+                    s.concat(" '" + User.SELF.getName() + "'");
             broadcast(s);
     }
     
@@ -223,8 +227,7 @@ public class DAMIC{
             java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         
-        DAMIC.getInstance();
-        MainWindow.getInstance();
+        MainWindow.getInstance();        DAMIC.getInstance();
     }
 
 }

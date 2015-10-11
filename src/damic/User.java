@@ -12,7 +12,8 @@ import java.net.InetAddress;
  * @author Angel
  */
 public class User {
-    private static int ONLINE_TIMEOT = 3000;
+    private static final int ONLINE_TIMEOT = 3000;
+    public static User SELF; 
     
     String mName = ""; 
     String mAddress = "";
