@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Enumeration;
 
@@ -41,11 +42,11 @@ public class Utils {
         return null;
      }
        
-    public static String getContentType(String urlString) throws IOException{
+    public static String getContentType(String urlString) throws IOException, UnknownHostException{
     URL url = new URL(urlString);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("HEAD");
-    if (isRedirect(connection.getResponseCode())) {
+    if(isRedirect(connection.getResponseCode())) {
         String newUrl = connection.getHeaderField("Location"); // get redirect url from "location" header field
             //logger.warn("Original request URL: '{}' redirected to: '{}'", urlString, newUrl);
             return getContentType(newUrl);

@@ -34,7 +34,7 @@ public class Emoti {
         for(int i=0;i<Emoti.LIST.length;i++){
             String s = Emoti.LIST[i].toLowerCase();
             
-            str = str.replace(s, "<img src=\""+ Emoti.class.getResource("i32/"+s+".png").toString()+"\"> ");
+            str = str.replace(s, " <img src=\""+ Emoti.class.getResource("i32/"+s+".png").toString()+"\"> ");
         }
         return str;
     }

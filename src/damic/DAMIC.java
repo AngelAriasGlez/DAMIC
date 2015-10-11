@@ -40,6 +40,7 @@ public class DAMIC{
     public static int PORT = 4445;
     
     public static String CMD_MESSAGE = "MSG";
+    public static String CMD_PING = "PNG";
     
     User mUser;
     
@@ -55,11 +56,7 @@ public class DAMIC{
 
         new ListenThread().start();
         
-        String username = JOptionPane.showInputDialog(
-            MainWindow.getInstance(),
-            "Username :" 
-            );  // el icono sera un iterrogante
-        mUser.setName(username);
+
     }
     
     public User getUser(){
@@ -93,6 +90,9 @@ public class DAMIC{
                             u.setName(usrname);
                             u.setAddress(packet.getAddress().getCanonicalHostName());
                             MainWindow.getInstance().appendMessage(u, new Message(msg));
+                        }else if(cmd.equals(CMD_MESSAGE)){
+                            String usrname = data.substring(data.indexOf("'")+1, data.lastIndexOf("'"));
+                            //MainWindow.getInstance().appendMessage(u, new Message(msg));
                         }
                 }
 
@@ -104,17 +104,23 @@ public class DAMIC{
         }
 
     }
-    public void send(Message msg){
+    public void sendMsg(Message msg){
+            send(CMD_MESSAGE + " '" + mUser.getName() +"' " + msg.toString());
+    }
+    public void sendPing(Message msg){
+            send(CMD_PING + " '" + mUser.getName() + "'");
+    }
+    
+     public void send(String str){
         try{
             DatagramSocket socket = new DatagramSocket();
-            String msgstr = CMD_MESSAGE + " '" + mUser.getName() +"' " + msg.toString();
-            DatagramPacket packet = new DatagramPacket(msgstr.getBytes(), msgstr.length(), InetAddress.getByName("255.255.255.255"), PORT);
+            DatagramPacket packet = new DatagramPacket(str.getBytes(), str.length(), InetAddress.getByName("255.255.255.255"), PORT);
             socket.send(packet);
             socket.close();
         }catch (IOException e){
             System.out.println(e.getMessage());
         }
-    }
+    }   
     
     
     
