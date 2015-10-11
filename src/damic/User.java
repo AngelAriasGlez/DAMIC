@@ -12,8 +12,11 @@ import java.net.InetAddress;
  * @author Angel
  */
 public class User {
+    private static int ONLINE_TIMEOT = 3000;
+    
     String mName = ""; 
     String mAddress = "";
+    long mPrevOnline = 0;
     public User(){
 
     }
@@ -32,7 +35,14 @@ public class User {
     public void setAddress(String addr){
         mAddress = addr;
     }
-     public String getAddress(){
+    public String getAddress(){
         return mAddress;
     }  
+    
+    public void online(){
+        mPrevOnline = System.currentTimeMillis();
+    }
+    public boolean isOnline(){
+        return (System.currentTimeMillis()-mPrevOnline < ONLINE_TIMEOT);
+    }
 }

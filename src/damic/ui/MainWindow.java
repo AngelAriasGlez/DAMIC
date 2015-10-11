@@ -10,6 +10,7 @@ import damic.Message;
 import damic.User;
 import damic.Utils;
 import emoti.Emoti;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Image;
@@ -21,13 +22,17 @@ import java.awt.event.WindowFocusListener;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
@@ -35,7 +40,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
-import javax.swing.text.DefaultCaret;
 /**
  *
  * @author Angel
@@ -118,6 +122,10 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         }
 
         addWindowFocusListener(this);
+        
+        
+        jList1.setCellRenderer(new UserCellRenderer());
+
 
         pack();
         setVisible(true);
@@ -200,11 +208,6 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
-        jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane2.setViewportView(jList1);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -294,10 +297,10 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-
+        showUsernameInputDialog();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    void inputUsernameDialog(){
+    void showUsernameInputDialog(){
         String username = JOptionPane.showInputDialog(
                 this,
                 "Username :"
@@ -319,6 +322,15 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
 
     }//GEN-LAST:event_jMenu1MouseClicked
 
+    public void setOnlineUsers(ArrayList<User> users){
+        DefaultListModel model = (DefaultListModel)jList1.getModel();
+        users.clear();
+        for(User u : users){
+            users.add(u);
+        }
+    }
+    
+    
     public void appendLocalMessage(String msg) {
         HTMLDocument doc = (HTMLDocument) jTextPane2.getDocument();
         try {
@@ -338,7 +350,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         if (text.replaceAll("[\r\n ]", "").isEmpty()) {
             return;
         }
-        DAMIC.getInstance().sendMsg(new Message(text));
+        DAMIC.getInstance().sendMessage(new Message(text));
 
         jTextPane2.setText("<html><body><p id=\"mn\"></p></body></html>");
     }
@@ -431,4 +443,26 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
     public void windowLostFocus(WindowEvent e) {
 
     }
+    
+    
+    
+    
+    class UserCellRenderer extends JLabel implements ListCellRenderer {
+
+
+    public UserCellRenderer() {
+        setOpaque(true);
+        setIconTextGap(12);
+    }
+
+    public Component getListCellRendererComponent(JList list, Object value,
+      int index, boolean isSelected, boolean cellHasFocus) {
+        User entry = (User) value;
+        setText(entry.getName());
+
+    return this;
+  }
+}
+
+    
 }
