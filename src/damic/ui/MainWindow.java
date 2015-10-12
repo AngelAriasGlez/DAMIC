@@ -416,9 +416,11 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
 
         String text = "";
         if (usr == User.SELF) {
-            text = "<p  style=\"text-align:right;background:#e0e0ee;padding:5px; margin:0px 10px 5px 10px\">" + html + "</p>";
+            text = "<table style=\"background:#e0e0ee;padding:5px; margin:0px 10px 5px 10px;\" width=\"100%\"><tr><td style=\"text-align:right;\">" + html + "</td><td  style=\"text-align:right;color:#aaaaaa;\" width=\"50\"><i>"+msg.getTime()+"</i></td></tr></table>";
+            //text = "<p  style=\"text-align:right;background:#e0e0ee;padding:5px; margin:0px 10px 5px 10px\">" + html + " <span style=\"color:#aaaaaa;\"><i>"+msg.getTime()+"</i></span> </p>";
         } else {
-            text = "<p  style=\"background:#e0eee0#e0e0ee;padding:5px; margin:0px 10px 5px 10px\"><span style=\"color:#aaaaaa;\"><i>" + usr.toString() + "</i></span> " + html + "</p>";
+            text = "<table style=\"background:#e0eee0;padding:5px; margin:0px 10px 5px 10px;\" width=\"100%\"><tr><td  style=\"color:#aaaaaa;\" width=\"50\"><i>"+usr.toString()+"</i></td><td style=\"\">" + html + "</td></tr></table>";
+            //text = "<p  style=\"background:#e0eee0#e0e0ee;padding:5px; margin:0px 10px 5px 10px\"><span style=\"color:#aaaaaa;\"><i>" + usr.toString() + "</i></span> " + html + "</p>";
         }
         try {
             doc.insertBeforeEnd(doc.getDefaultRootElement().getElement(0), text);
