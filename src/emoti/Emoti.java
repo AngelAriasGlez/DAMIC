@@ -23,7 +23,7 @@ public class Emoti {
         "1F4A9","1F4AA","1F50A","1F600","1F607","1F608","1F60E","1F610","1F611",
         "1F615","1F617","1F619","1F61B","1F61F","1F626","1F627","1F62C","1F62E",
         "1F62F",
-                    "0m1", "0m2", "0m3", "0m4"
+                    "0m1", "0m2", "0m3", "0m4", "0m5"
         };
     
     public static Image get(String name){

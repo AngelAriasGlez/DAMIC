@@ -5,6 +5,7 @@
  */
 package damic.ui;
 
+
 import damic.DAMIC;
 import damic.Message;
 import damic.User;
@@ -13,8 +14,11 @@ import emoti.Emoti;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
@@ -27,21 +31,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
 
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
+
+
 /**
  *
  * @author Angel
@@ -49,18 +54,15 @@ import javax.swing.text.html.StyleSheet;
 public class MainWindow extends javax.swing.JFrame implements WindowFocusListener {
 
     int mUnreadMsg = 0;
+    
+    boolean mNeedScroll = false;
 
-    private static MainWindow mInstance = null;
-
-    public static MainWindow getInstance() {
-        if (mInstance == null) {
-            mInstance = new MainWindow();
-        }
-        return mInstance;
-    }
 
     public MainWindow() {
         initComponents();
+        
+        System.setProperty("http.agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+        
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icon.png")));
 
         /*Action action = new AbstractAction(){
@@ -71,13 +73,17 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         };*/
         jTextPane1.setContentType("text/html");
 
+        
+
         StyleSheet styleSheet = ((HTMLEditorKit) jTextPane1.getEditorKit()).getStyleSheet();
-        styleSheet.addRule("body {color:#000; font-family:Helvetica; margin: 4px;}");
+        styleSheet.addRule("body {color:#222222;font-family:Helvetica; margin: 4px;background-image: '"+getClass().getResource("bg.png")+"'}");
         styleSheet.addRule("p {margin:0;padding:0;}");
+
+
         
 
         //jTextPane1.setText("<html style=\"font:'"+getClass().getResource("hn.otf")+"';\">");
-        //jTextPane1.setEditable(false);
+        jTextPane1.setEditable(false);
         jTextPane1.setCaretColor(jTextPane1.getBackground());
         jTextPane1.addHyperlinkListener(new HyperlinkListener() {
             public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -133,11 +139,27 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         
         jList1.setCellRenderer(new UserCellRenderer());
 
+        
+        jScrollPane1.setVisible(false);
 
         pack();
         setVisible(true);
         
+        jScrollPane4.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+    @Override
+    public void adjustmentValueChanged(AdjustmentEvent ae) {
+        if(mNeedScroll)
+        jScrollPane4.getVerticalScrollBar().setValue(jScrollPane4.getVerticalScrollBar().getMaximum());
+        mNeedScroll = false;
+    }
+});
+        
 
+    }
+    
+    
+    public void updateUsername(){
+        jLabel1.setText(User.SELF.toString());
     }
 
     /**
@@ -157,10 +179,12 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel3 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -170,11 +194,13 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("DAMIC");
+        setPreferredSize(new java.awt.Dimension(1150, 800));
 
         jScrollPane4.setViewportView(jTextPane1);
 
         jScrollPane5.setViewportView(jTextPane2);
 
+        jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton2.setText("Send");
         jButton2.setToolTipText("");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -189,49 +215,64 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         jPanel3.setPreferredSize(new java.awt.Dimension(170, 1000));
         jScrollPane1.setViewportView(jPanel3);
 
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/damic/ui/happy.png"))); // NOI18N
+        jButton1.setToolTipText("");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4)
+            .addComponent(jScrollPane1)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane5)
-                        .addGap(10, 10, 10)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane4)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 783, Short.MAX_VALUE)))
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
+        jList1.setBackground(new java.awt.Color(250, 250, 250));
         jList1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jScrollPane2.setViewportView(jList1);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(34, 34, 34));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 572, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 32, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
         );
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/damic/ui/icon_big.png"))); // NOI18N
+        jLabel2.setToolTipText("");
 
         jMenuBar1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
@@ -276,18 +317,23 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(20, 20, 20))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2)
@@ -318,7 +364,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         User u = User.SELF;
         u.setName(username);
 
-        jLabel1.setText(username);
+        jLabel1.setText(u.toString());
     
     }
     
@@ -331,6 +377,11 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         }
 
     }//GEN-LAST:event_jMenu1MouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        jScrollPane1.setVisible(!jScrollPane1.isVisible());                // TODO add your handling code here:
+        this.validate();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     public void setOnlineUsers(ArrayList<User> users){
         DefaultListModel listModel = new DefaultListModel();
@@ -369,7 +420,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         if (text.replaceAll(" ", "").isEmpty()) {
             return;
         }
-        DAMIC.getInstance().broadcastMessage(new Message(text));
+        DAMIC.broadcastMessage(new Message(text));
 
         jTextPane2.setText("<html><body><p id=\"mn\"></p></body></html>");
     }
@@ -394,6 +445,8 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         html = html.replaceAll("\n", "<br/>");
         html = Emoti.replace(html);
         
+        
+        
         Pattern p = Pattern.compile("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z)");
         Matcher m = p.matcher(html);
         while (m.find()) {
@@ -402,7 +455,15 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
 
                 String contentType = Utils.getContentType(url);
                 if (contentType.contains("image")) {
-                    html = html.substring(0, m.start()) + "<a href=\"" + url + "\">" + url + "</a> <br/><br/> <img src=\"" + url + "\">" + html.substring(m.end(), html.length());
+                    Dimension imgsize = Utils.getImageSize(url);
+                    String hsize = "";
+                    if(imgsize != null && imgsize.width > 600){
+                            imgsize.height = (int)((float)imgsize.height / (float)imgsize.width * 600.0f);
+                            imgsize.width = 600;
+                            hsize = hsize.concat("width=\""+imgsize.width+"\" height=\""+imgsize.height+"\"");
+                    } 
+                    
+                    html = html.substring(0, m.start()) + "<a href=\"" + url + "\">" + url.substring(0, (url.length()>80?80:url.length())) + (url.length()>80?"...":"") + "</a> <br/><br/> <img "+hsize+" src=\"" + url + "\">" + html.substring(m.end(), html.length());
                 } else {
                     html = html.substring(0, m.start()) + "<a href=\"" + url + "\">" + url + "</a>" + html.substring(m.end(), html.length());
                 }
@@ -416,10 +477,10 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
 
         String text = "";
         if (usr == User.SELF) {
-            text = "<table style=\"background:#e0e0ee;padding:5px; margin:0px 10px 5px 10px;\" width=\"100%\"><tr><td style=\"text-align:right;\">" + html + "</td><td  style=\"text-align:right;color:#aaaaaa;\" width=\"50\"><i>"+msg.getTime()+"</i></td></tr></table>";
+            text = "<table style=\"background:#e7e7ee;margin:0 15 5 15;padding:5px;\" width=\"100%\"><tr><td  style=\"text-align:right;color:#aaaaaa;\" width=\"50\" valign=\"top\">"+msg.getTime()+"</td><td style=\"text-align:right;\">" + html + "</td></tr></table>";
             //text = "<p  style=\"text-align:right;background:#e0e0ee;padding:5px; margin:0px 10px 5px 10px\">" + html + " <span style=\"color:#aaaaaa;\"><i>"+msg.getTime()+"</i></span> </p>";
         } else {
-            text = "<table style=\"background:#e0eee0;padding:5px; margin:0px 10px 5px 10px;\" width=\"100%\"><tr><td  style=\"color:#aaaaaa;\" width=\"50\"><i>"+usr.toString()+"</i></td><td style=\"\">" + html + "</td></tr></table>";
+            text = "<table style=\"background:#e5eeee;margin:0 15 5 15;padding:5px;\" width=\"100%\"><tr><td style=\"\">" + html + "</td><td  valign=\"top\" style=\"text-align:right;color:#aaaaaa;\" width=\"150\"><b>"+usr.toString(15)+"</b><br/>"+msg.getTime()+"</td></tr></table>";
             //text = "<p  style=\"background:#e0eee0#e0e0ee;padding:5px; margin:0px 10px 5px 10px\"><span style=\"color:#aaaaaa;\"><i>" + usr.toString() + "</i></span> " + html + "</p>";
         }
         try {
@@ -427,7 +488,8 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         } catch (BadLocationException | IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
-        jTextPane1.setCaretPosition(doc.getLength());
+        //jTextPane1.setCaretPosition(doc.getLength());
+        mNeedScroll = true;
 
 
 
@@ -435,8 +497,10 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JList jList1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -485,7 +549,9 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         }
         User entry = (User) value;
         
-        setText("<html><body><div style=\"background:#eeeeee;padding-bottom:2px;\"><p width=\"144px\" style=\"background:#f4f4f4;padding:20 15 15 15; font-size:14;\"><img align=\"middle\" src=\""+getClass().getResource("online.png")+"\"/>"+entry.toString()+"</p></div></body></html>");
+
+        
+        setText("<html><body><div style=\"padding:5;\"><p width=\"136px\" style=\"background:#e5eeee;padding:13 15 5 15; color:#222222;font-size:14;\"><img align=\"middle\" src=\""+getClass().getResource("online.png")+"\"/>"+entry.toString(15)+"</p></div></body></html>");
     return this;
   }
 }

@@ -12,7 +12,7 @@ import java.net.InetAddress;
  * @author Angel
  */
 public class User {
-    private static final int ONLINE_TIMEOT = 3000;
+    private static final int ONLINE_TIMEOT = 2100;
     public static User SELF = new User(); 
     
     String mName = ""; 
@@ -51,4 +51,13 @@ public class User {
         }
         return mAddress;
     }
+
+    public String toString(int size){
+             String name = toString();
+            if(name.length() > size){
+                name = name.substring(0, size);
+                name += "...";
+            }
+            return name;
 }
+    }

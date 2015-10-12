@@ -27,13 +27,7 @@ import javax.swing.Timer;
  * @author Angel
  */
 public class DAMIC{
-    private static DAMIC mInstance = null;
-    public static DAMIC getInstance(){
-        if(mInstance == null){
-            mInstance = new DAMIC();
-        }
-        return mInstance;
-    }
+
     
     ListenThread mListener;
     
@@ -48,8 +42,10 @@ public class DAMIC{
     
     String mSelfIp = "";
     
-    public DAMIC(){
-
+    MainWindow mMainwindow;
+    public DAMIC(MainWindow mw){
+        mMainwindow = mw;
+                
         try {
             InetAddress ia = Utils.getEthInterfaceInformation();
             if(ia != null)
@@ -59,6 +55,8 @@ public class DAMIC{
             Logger.getLogger(DAMIC.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        mMainwindow.updateUsername();
+        
         mListener = new ListenThread();
         mListener.start();
         
@@ -127,7 +125,7 @@ public class DAMIC{
             User remoteuser = getUserByIp(id.ip);
             remoteuser.online();
             if(id.cmd.equals(CMD_MESSAGE)){
-                MainWindow.getInstance().appendMessage(remoteuser, new Message(id.data));
+                mMainwindow.appendMessage(remoteuser, new Message(id.data));
             }else if(id.cmd.equals(CMD_UPDATE)){
                 int fo = id.data.indexOf("'");
                 if(fo > -1){
@@ -136,7 +134,7 @@ public class DAMIC{
                     remoteuser.setName(usrname);
                 }
             }
-            MainWindow.getInstance().setOnlineUsers(mOnlineUsers);
+            mMainwindow.setOnlineUsers(mOnlineUsers);
     }
     
     
@@ -178,17 +176,17 @@ public class DAMIC{
         }
 
     }
-    public void broadcastMessage(Message msg){
+    public static void broadcastMessage(Message msg){
             broadcast(CMD_MESSAGE + " " + msg.toString());
     }
-    public void broadcastUpdate(){
+    public static void broadcastUpdate(){
         String s = CMD_UPDATE;
-                if(!(User.SELF.getName()).isEmpty())
+                if(User.SELF.getName() != null && !(User.SELF.getName()).isEmpty())
                     s = s.concat(" '" + User.SELF.getName() + "'");
             broadcast(s);
     }
     
-     public void broadcast(String str){
+     public static void broadcast(String str){
         try(DatagramSocket socket = new DatagramSocket()) {
             DatagramPacket packet = new DatagramPacket(str.getBytes(), str.length(), InetAddress.getByName("255.255.255.255"), PORT);
             socket.send(packet);
@@ -227,7 +225,9 @@ public class DAMIC{
             java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         
-        MainWindow.getInstance();        DAMIC.getInstance();
+       
+        MainWindow m = new MainWindow();
+        new DAMIC(m);
     }
 
 }
