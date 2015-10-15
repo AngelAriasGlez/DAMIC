@@ -551,7 +551,7 @@ public class MainWindow extends javax.swing.JFrame implements WindowFocusListene
         
 
         
-        setText("<html><body><div style=\"padding:5 5 0 5;\"><p width=\"136px\" style=\"background:#e5eeee;padding:13 15 5 15; color:#222222;font-size:14;\"><img align=\"middle\" src=\""+getClass().getResource("online.png")+"\"/>"+entry.toString(25)+"</p></div></body></html>");
+        setText("<html><body><div style=\"padding:5 5 0 5;\"><p width=\"136px\" style=\"background:#e5eeee;padding:13 15 5 15; color:#222222;font-size:14;\"><img align=\"middle\" src=\""+getClass().getResource("online.png")+"\"/>"+entry.toString(15)+"</p></div></body></html>");
     return this;
   }
 }
