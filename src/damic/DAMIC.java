@@ -127,12 +127,8 @@ public class DAMIC{
             if(id.cmd.equals(CMD_MESSAGE)){
                 mMainwindow.appendMessage(remoteuser, new Message(id.data));
             }else if(id.cmd.equals(CMD_UPDATE)){
-                int fo = id.data.indexOf("'");
-                if(fo > -1){
-                    fo++;
-                    String usrname = id.data.substring(fo, id.data.indexOf("'", fo));
-                    remoteuser.setName(usrname);
-                }
+                if(id.data != null)
+                remoteuser.setName(id.data);
             }
             mMainwindow.setOnlineUsers(mOnlineUsers);
     }
@@ -159,10 +155,15 @@ public class DAMIC{
                         byte[] buff = new byte[1024*10];
                         DatagramPacket packet = new DatagramPacket(buff, buff.length);
                         mSocket.receive(packet);
-                        String cmd = new String(packet.getData(), 0, 3);
-                        String data = new String(packet.getData(), 4, packet.getLength());
-                        String ip = packet.getAddress().getHostAddress();
-                        mQueue.add(new InputData(cmd, data, ip));
+                        if(packet.getLength() >= 3){
+                            String cmd = new String(packet.getData(), 0, 3);
+                            String data = null;
+                            if(packet.getLength() > 4){
+                                data = new String(packet.getData(), 4, packet.getLength());
+                            }
+                            String ip = packet.getAddress().getHostAddress();
+                            mQueue.add(new InputData(cmd, data, ip));
+                        }
                 }
 
             
@@ -181,14 +182,16 @@ public class DAMIC{
     }
     public static void broadcastUpdate(){
         String s = CMD_UPDATE;
-                if(User.SELF.getName() != null && !(User.SELF.getName()).isEmpty())
-                    s = s.concat(" '" + User.SELF.getName() + "'");
+                if(User.SELF.getName() != null && !(User.SELF.getName()).isEmpty()){
+                    s = s.concat(" " + User.SELF.getName());
+                }
             broadcast(s);
     }
     
      public static void broadcast(String str){
         try(DatagramSocket socket = new DatagramSocket()) {
-            DatagramPacket packet = new DatagramPacket(str.getBytes(), str.length(), InetAddress.getByName("255.255.255.255"), PORT);
+            byte[] b = str.getBytes();
+            DatagramPacket packet = new DatagramPacket(b, b.length, InetAddress.getByName("255.255.255.255"), PORT);
             socket.send(packet);
         }catch (IOException e){
             System.out.println(e.getMessage());
