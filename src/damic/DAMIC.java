@@ -6,6 +6,8 @@
 package damic;
 
 
+import com.angel.db.Record;
+import com.angel.db.SqlLiteDriver;
 import damic.ui.MainWindow;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +16,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,7 +30,7 @@ import javax.swing.Timer;
  * @author Angel
  */
 public class DAMIC{
-
+    SqlLiteDriver mDb;
     
     ListenThread mListener;
     
@@ -43,8 +46,11 @@ public class DAMIC{
     String mSelfIp = "";
     
     MainWindow mMainwindow;
-    public DAMIC(MainWindow mw){
+    public DAMIC(MainWindow mw) throws SQLException, IOException{
         mMainwindow = mw;
+        
+
+        
                 
         try {
             InetAddress ia = Utils.getEthInterfaceInformation();
@@ -84,9 +90,28 @@ public class DAMIC{
         timer2.start();
         
         
+        
+        //Retrive from db
+        DatabaseModel model = new DatabaseModel();
+        mDb = new SqlLiteDriver(model.getName(), model.getStructure());
+        if(!mDb.exists()){
+            mDb.create();
+            mDb.insertOrReplace(model.getDefaults());
+        }
+        
+        ArrayList<Record> rs = mDb.getAll();
+        for(Record r : rs){
+            User u = getUserByIp(r.get("addr"));
+            u.setName(r.get("user"));
 
+            Message m = new Message();
+            m.setData(r.get("msg"));
+            m.setTime(r.get("time"));
+            mMainwindow.appendMessage(u, m);
+        }
+        
     }
-    
+
 
     
     public User getUserByIp(String ip){
@@ -125,7 +150,16 @@ public class DAMIC{
             User remoteuser = getUserByIp(id.ip);
             remoteuser.online();
             if(id.cmd.equals(CMD_MESSAGE)){
-                mMainwindow.appendMessage(remoteuser, new Message(id.data));
+                Message msg = new Message(id.data);
+                mMainwindow.appendMessage(remoteuser, msg);
+                
+                Record r = new Record();
+                r.set("user", remoteuser.getName());
+                r.set("addr", remoteuser.getAddress());
+                r.set("msg", msg.toString());
+                r.set("time", msg.getTime());
+                mDb.insertOrReplace(r);
+                        
             }else if(id.cmd.equals(CMD_UPDATE)){
                 if(id.data != null)
                 remoteuser.setName(id.data);
@@ -215,7 +249,7 @@ public class DAMIC{
     
     
     
-    public static void main(String args[]) {
+    public static void main(String args[]) throws SQLException, IOException {
        
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

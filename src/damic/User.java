@@ -15,9 +15,9 @@ public class User {
     private static final int ONLINE_TIMEOT = 2100;
     public static User SELF = new User(); 
     
-    String mName = ""; 
-    String mAddress = "";
-    long mPrevOnline = 0;
+    private String mName = ""; 
+    private String mAddress = "";
+    private long mPrevOnline = 0;
     public User(){
 
     }

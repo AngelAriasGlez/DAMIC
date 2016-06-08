@@ -15,15 +15,29 @@ import java.util.Date;
  * @author Angel
  */
 public class Message {
-    String mData = null;
-    String mTime = "";
+    private String mData = null;
+    private String mTime = "";
 
+    public Message(){
     
+    }
+
     public Message(String data){
         mData = data;
         Date date = new Date();
         mTime = new SimpleDateFormat("HH:mm").format(date); // 9:00
 
+    }
+
+    public void setData(String data) {
+        this.mData = data;
+    }
+
+    public void setTime(String time) {
+        this.mTime = time;
+    }
+    public String getData() {
+        return mData;
     }
     
     public String toString(){
